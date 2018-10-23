@@ -7,7 +7,9 @@ import java.lang.*;
 import java.util.*;
 
 public class JavaShell {
-//	public static String separator = "\\";
+
+	static HistoryFeature hf = new HistoryFeature();
+	
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 		String commandLine;
@@ -37,38 +39,24 @@ public class JavaShell {
 			//store the history commands onto the list
 			historyList.add(commandLine);
 			
-			//history
-			if(commandLine.equals("history")){
-				for(int i=0; i<historyList.size(); i++){
-					System.out.println(i + " " + historyList.get(i));
-				}
+			//start of history conditions
+			if(commandLine.equals("history")){		
+				hf.history(historyList);
+				continue;
 			}
 			else if(commandLine.equals("!!")){
-				if(historyList.size() == 1 ){
-					System.out.println("There are no previous commands. Please continue...");
-					continue;
-				}
-				else{
-					commandLine = historyList.get(historyList.size() - 2);
-//					System.out.println("THIS ARE HISCOMANDS " + commandLine);
-				}
+				commandLine = hf.prevCommand(historyList);
 			}
 			else if(commandLine.matches("[!][0-9]")){
-				String newString = commandLine.replaceAll("\\D+","");
-				int num = Integer.parseInt(newString);
-				commandLine = historyList.get(num);
-				System.out.println(historyList.get(num));
-				
-			}
+				commandLine = hf.runIthCommand(commandLine, historyList);			
+			}//end of history conditions
 			
-			//(1) parse the input to obtain the command and any parameters
+			//parse the input to obtain the command and any parameters
 			StringTokenizer getInput = new StringTokenizer(commandLine);
-			//store commands in the List
 			while(getInput.hasMoreTokens()){
 				//add to list
 				commands.add(getInput.nextToken());
 			}
-			
 			
 			//need to check for other commands
 			if(commandLine.equals("cd")){
@@ -78,19 +66,8 @@ public class JavaShell {
 			else if(commands.get(0).equals("cd") && commands.size() >= 1 ){
 				cdCommand = commands.get(1);
 				homeDir = cdCommand;
-				
-				
-//				System.out.println(homeDir);
-				
-				
-//				System.out.println("DIRRR " + pb.directory(workingDir));
-				
-//				System.out.print("ARE YOU HERE?");
-				
 			}
 			else{
-			
-//			System.out.println("HELLOOOOO "+commands.get(1));
 			
 			//(3) starting the process 
 	        try{
