@@ -9,16 +9,16 @@ import java.util.*;
 public class JavaShell {
 
 	static HistoryFeature hf = new HistoryFeature();
+	static StartProcess initiate = new StartProcess();
 	
 	public static void main(String[] args) throws IOException {
-		// TODO Auto-generated method stub
-		String commandLine;
-		Process process;
+		
 		BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
-		ProcessBuilder pb = new ProcessBuilder();
 		String homeDir = System.getProperty("user.dir");
 		String cdCommand = null;
-		
+		String commandLine;
+		String OSName = System.getProperty("os.name");
+		System.out.println(OSName);
 		
 		List<String> commands = new ArrayList<String>();
 		List<String> historyList = new ArrayList<String>();
@@ -29,6 +29,8 @@ public class JavaShell {
 		// read what the user entered
 		System.out.print("jsh>");
 		commandLine = console.readLine();
+		commandLine.toLowerCase();
+		
 		// if the user entered a return, just loop again
 		if (commandLine.equals("")) continue;
 		else{
@@ -68,28 +70,12 @@ public class JavaShell {
 				homeDir = cdCommand;
 			}
 			else{
-			
-			//(3) starting the process 
+			System.out.println("THESE ARE THE COMMANDS: " +commands);
+			//start the process 
 	        try{
-				//(2) create a ProcessBuilder object
-				pb = new ProcessBuilder(commands);
-	        	//need this here bc we need to know where to cd
-	        	File workingDir = new File(homeDir);
-	        	pb.directory(workingDir);
-	        	
-				process = pb.start();  
-		   
-		        //(4) for reading the output from stream 
-		        BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream())); 
-		        String s = null; 
-		        while ((s = stdInput.readLine()) != null) 
-		        { 
-		        //(5) output the contents returned by the command
-		            System.out.println(s); 
-		        }
+	        	initiate.initiateProcess(homeDir, commands);
 	        }
 	        catch (Exception e){
-//	        	e.printStackTrace();
 	        	System.out.println("Please Enter a Valid Input");
 	        }
 		}
