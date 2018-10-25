@@ -7,25 +7,18 @@ import java.util.List;
 public class StartProcess {
 
 	
-	public void initiateProcess(String input, List<String> commands) throws IOException{
+	public void initiateProcess(File directory, List<String> commands, ProcessBuilder pb) throws IOException{
 		Process process;
-		ProcessBuilder pb = new ProcessBuilder();
-		
-		//create a ProcessBuilder object
-		pb = new ProcessBuilder(commands);
-    	//create a file to properly use 'cd'
-    	File workingDir = new File(input);
-    	pb.directory(workingDir);
-    	
-
+    	pb.directory(directory);	
+		pb.command(commands);
 		process = pb.start();
    
-        //reading the output from stream 
+        // reading the output from stream 
         BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream())); 
         String output = null; 
         while ((output = stdInput.readLine()) != null) 
         { 
-        //output the contents returned by the command
+        // output the contents returned by the command
             System.out.println(output); 
         }
 	}

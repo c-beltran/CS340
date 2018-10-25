@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -13,7 +14,9 @@ public class WindowsExclusive {
 	
 	public void startWindowsCMD() throws IOException{
 		BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
-		String homeDir = System.getProperty("user.dir");
+		ProcessBuilder pb = new ProcessBuilder();
+		String homeDir = System.getProperty("user.home");
+		File directory = new File(homeDir);
 		String cdCommand = null;
 		String commandLine;
 				
@@ -31,14 +34,14 @@ public class WindowsExclusive {
 			if (commandLine.equals("")) continue;
 			else{
 				
-				//clear the command list
+				// clear the command list
 				commands = new ArrayList<String>();
 				commands.add("cmd.exe");
 				commands.add("/c");
-				//store the history commands onto the list
+				// store the history commands onto the list
 				historyList.add(commandLine);
 				
-				//start of history conditions
+				// start of history conditions
 				if(commandLine.equals("history")){		
 					hf.history(historyList);
 					continue;
@@ -46,36 +49,51 @@ public class WindowsExclusive {
 				else if(commandLine.equals("!!")){
 					commandLine = hf.prevCommand(historyList);
 				}
-				else if(commandLine.matches("[!][0-9]")){
+				else if(commandLine.matches("[!]\\s*[0-9]")){
 					commandLine = hf.runIthCommand(commandLine, historyList);			
-				}//end of history conditions
+				}// end of history conditions
 				
-				//parse the input to obtain the command and any parameters
+				// parse the input to obtain the command and any parameters
 				StringTokenizer getInput = new StringTokenizer(commandLine);
 				while(getInput.hasMoreTokens()){
 					//add to list
 					commands.add(getInput.nextToken());
 				}
 
-				//need to check for other commands
+				// checking for cd commands
 				if(commandLine.equals("cd")){
-					homeDir = System.getProperty("user.dir");
-					System.out.println("Your Current Dir. is: " + homeDir);
+					homeDir = System.getProperty("user.home");
+					File home = new File(homeDir);
+					System.out.println("Your Home Dir. is: " + home);
+					directory = home;
+					continue;
+				}
+				else if (commandLine.matches("cd ..")){
+					homeDir = pb.directory().getParent();
+					File parent = new File(homeDir);
+					System.out.println(parent);
+					directory = parent;
+					continue;
 				}
 				else if(commands.get(2).equals("cd") && commands.size() > 1 ){
 					cdCommand = commands.get(3);
-					homeDir = cdCommand;
+					File newDir = new File(pb.directory() + File.separator + cdCommand);
+					if(newDir.isDirectory()){
+						System.out.println(cdCommand);
+						directory = newDir;
+						continue;
+					}
 				}
 				else{
-				//start the process 
+				// start the process 
 					try{
-						initiate.initiateProcess(homeDir, commands);
+						initiate.initiateProcess(directory, commands, pb);
 					}
 					catch (Exception e){
 						System.out.println("Please Enter a Valid Input");
 					}
-				}//end of else
-			}//end of else
-		}//end of while loop
-	}//end of startWindowsCMD 
-}//end of class
+				}// end of else
+			}// end of else
+		}// end of while loop
+	}// end of startWindowsCMD 
+}// end of class
