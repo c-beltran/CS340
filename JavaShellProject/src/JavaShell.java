@@ -9,9 +9,9 @@ import java.util.*;
 /**
  * JavaShell class
  * this class in the main driver class that
- * contains the main function
- * if you are using a Unix OS system
- * this class will handle the user commands
+ * contains the main function for UNIX systems,
+ * detects if you are using a windows system,
+ * this class will handle the user commands.
  * @author Carlos Alberto
  *
  */
@@ -62,7 +62,9 @@ public class JavaShell {
 				commands = new ArrayList<String>();
 				
 				// store the history commands onto the list
-				historyList.add(commandLine);
+				if(!commandLine.equals("history")){
+					historyList.add(commandLine);
+				}
 
 				// start of history conditions
 				if(commandLine.equals("history")){		
@@ -72,7 +74,7 @@ public class JavaShell {
 				else if(commandLine.equals("!!")){
 					commandLine = hf.prevCommand(historyList);
 				}
-				else if(commandLine.matches("[!]\\s*[0-9]")){
+				else if(commandLine.matches("[!]\\s*[0-9]+")){
 					commandLine = hf.runIthCommand(commandLine, historyList);			
 				}// end of history conditions
 				

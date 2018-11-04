@@ -6,12 +6,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-
+/**
+ * WindowsExclusive class
+ * This class is exclusively 
+ * for Windows operating systems.
+ * It will run only when a window
+ * OS is detected.
+ * @author Carlos Alberto
+ *
+ */
 public class WindowsExclusive {
 	
 	static HistoryFeature hf = new HistoryFeature();
 	static StartProcess initiate = new StartProcess();
 	
+	/**
+	 * startWindowsCMD method runs windows commands only.
+	 * It is similar to JavaShell class but with
+	 * additional enhancements.
+	 * @throws IOException
+	 */
 	public void startWindowsCMD() throws IOException{
 		BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 		ProcessBuilder pb = new ProcessBuilder();
@@ -38,18 +52,21 @@ public class WindowsExclusive {
 				commands = new ArrayList<String>();
 				commands.add("cmd.exe");
 				commands.add("/c");
+				
 				// store the history commands onto the list
-				historyList.add(commandLine);
+				if(!commandLine.equals("history")){
+					historyList.add(commandLine);
+				}
 				
 				// start of history conditions
-				if(commandLine.equals("history")){		
+				else if(commandLine.equals("history")){		
 					hf.history(historyList);
 					continue;
 				}
 				else if(commandLine.equals("!!")){
 					commandLine = hf.prevCommand(historyList);
 				}
-				else if(commandLine.matches("[!]\\s*[0-9]")){
+				else if(commandLine.matches("[!]\\s*[0-9]+")){
 					commandLine = hf.runIthCommand(commandLine, historyList);			
 				}// end of history conditions
 				
@@ -60,7 +77,7 @@ public class WindowsExclusive {
 					commands.add(getInput.nextToken());
 				}
 
-				// checking for cd commands
+				// start check for cd commands
 				if(commandLine.equals("cd")){
 					homeDir = System.getProperty("user.home");
 					File home = new File(homeDir);
@@ -82,7 +99,7 @@ public class WindowsExclusive {
 						System.out.println(cdCommand);
 						directory = newDir;
 						continue;
-					}
+					}//end of check for cd commands
 				}
 				else{
 				// start the process 
